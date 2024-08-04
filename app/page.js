@@ -10,6 +10,8 @@ import {
   TextField,
 } from "@mui/material";
 
+import { Unstable_NumberInput as NumberInput } from "@mui/material";
+
 import {
   collection,
   doc,
@@ -43,6 +45,7 @@ export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
+  const [search, setSearch] = useState("");
 
   const updateInventory = async () => {
     const snapshot = query(collection(db, "items"));
@@ -129,6 +132,7 @@ export default function Home() {
       <Button variant="contained" onClick={handleOpen}>
         Add New Item
       </Button>
+
       <Box border={"1px solid #333"}>
         <Box
           width="800px"
@@ -142,29 +146,43 @@ export default function Home() {
             Inventory Items
           </Typography>
         </Box>
+        <TextField
+          id="outlined-basic"
+          fullWidth
+          label="Outlined"
+          variant="outlined"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
-          {inventory.map(({ name, quantity }) => (
-            <Box
-              key={name}
-              width="100%"
-              minHeight="150px"
-              display={"flex"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-              bgcolor={"#f0f0f0"}
-              paddingX={5}
-            >
-              <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
-                {name.charAt(0).toUpperCase() + name.slice(1)}
-              </Typography>
-              <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
-                Quantity: {quantity}
-              </Typography>
-              <Button variant="contained" onClick={() => removeItem(name)}>
-                Remove
-              </Button>
-            </Box>
-          ))}
+          {inventory
+            .filter((item) => {
+              return search.toLowerCase() === ""
+                ? item
+                : item.name.toLowerCase().includes(search.toLowerCase());
+            })
+            .map(({ name, quantity }) => (
+              <Box
+                key={name}
+                width="100%"
+                minHeight="150px"
+                display={"flex"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                bgcolor={"#f0f0f0"}
+                paddingX={5}
+              >
+                <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
+                  {name.charAt(0).toUpperCase() + name.slice(1)}
+                </Typography>
+                <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
+                  Quantity: {quantity}
+                </Typography>
+                <Button variant="contained" onClick={() => removeItem(name)}>
+                  Remove
+                </Button>
+              </Box>
+            ))}
         </Stack>
       </Box>
     </Box>
