@@ -10,7 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Unstable_NumberInput as NumberInput } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 import {
   collection,
@@ -23,6 +23,7 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { createTheme } from "@mui/material/styles";
 
 const style = {
   position: "absolute",
@@ -129,32 +130,49 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
-      <Button variant="contained" onClick={handleOpen}>
-        Add New Item
+
+      <Button
+        variant="contained"
+        endIcon={<AddIcon />}
+        sx={{
+          bgcolor: "#b5e2fa",
+          borderRadius: 1,
+          ":hover": { bgcolor: "#166088" },
+        }}
+        onClick={handleOpen}
+      >
+        Add Item
       </Button>
 
-      <Box border={"1px solid #333"}>
+      <Box border={"1px solid #333"} borderRadius={2} bgcolor={"#c0d6df"}>
         <Box
-          width="800px"
+          width="100%"
           height="100px"
-          bgcolor={"#ADD8E6"}
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
+          bgcolor={"#b5e2fa"}
+          borderRadius={2}
+          borderColor={"#166088"}
+          p={3}
         >
-          <Typography variant={"h2"} color={"#333"} textAlign={"center"}>
+          <Typography
+            variant={"h2"}
+            color={"#166088"}
+            textAlign={"center"}
+            bgcolor={"#b5e2fa"}
+          >
             Inventory Items
           </Typography>
         </Box>
         <TextField
           id="outlined-basic"
           fullWidth
-          label="Outlined"
           variant="outlined"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
+        <Stack width="100%" height="300px" spacing={2} overflow={"auto"}>
           {inventory
             .filter((item) => {
               return search.toLowerCase() === ""
@@ -169,15 +187,27 @@ export default function Home() {
                 display={"flex"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
-                bgcolor={"#f0f0f0"}
                 paddingX={5}
+                bgcolor={"#dbe9ee"}
+                color={"#c0d6df"}
               >
-                <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
-                  {name.charAt(0).toUpperCase() + name.slice(1)}
-                </Typography>
-                <Typography variant={"h3"} color={"#333"} textAlign={"center"}>
-                  Quantity: {quantity}
-                </Typography>
+                <Box>
+                  <Typography
+                    variant={"h5"}
+                    color={"#166088"}
+                    textAlign={"center"}
+                  >
+                    {name.charAt(0).toUpperCase() + name.slice(1)}
+                  </Typography>
+                  <Typography
+                    variant={"p"}
+                    color={"#166088"}
+                    textAlign={"center"}
+                  >
+                    Quantity: {quantity}
+                  </Typography>
+                </Box>
+
                 <Button variant="contained" onClick={() => removeItem(name)}>
                   Remove
                 </Button>
