@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import * as React from "react";
 import {
   Box,
   Stack,
@@ -10,6 +11,11 @@ import {
   TextField,
 } from "@mui/material";
 
+import {
+  Unstable_NumberInput as BaseNumberInput,
+  numberInputClasses,
+} from "@mui/base/Unstable_NumberInput";
+import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 
 import {
@@ -46,6 +52,7 @@ export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
+  const [itemQuant, setItemQuant] = useState(1);
   const [search, setSearch] = useState("");
 
   const updateInventory = async () => {
@@ -62,14 +69,14 @@ export default function Home() {
     updateInventory();
   }, []);
 
-  const addItem = async (item) => {
+  const addItem = async (item, itemQuant) => {
     const docRef = doc(collection(db, "items"), item);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const { quantity } = docSnap.data();
       await setDoc(docRef, { quantity: quantity + 1 });
     } else {
-      await setDoc(docRef, { quantity: 1 });
+      await setDoc(docRef, { quantity: itemQuant ? itemQuant : 1 });
     }
     await updateInventory();
   };
@@ -108,20 +115,33 @@ export default function Home() {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Add Item
           </Typography>
-          <Stack width="100%" direction={"row"} spacing={2}>
-            <TextField
-              id="outlined-basic"
-              label="Item"
-              variant="outlined"
-              fullWidth
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-            />
+          <Stack width="100%" spacing={2}>
+            <Box display={"flex"} alignItems={"center"} flexDirection={"row"}>
+              <TextField
+                id="outlined-basic"
+                label="Item"
+                variant="outlined"
+                width="50%"
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+              />
+              <TextField
+                id="outlined-basic"
+                label="Quantity"
+                variant="outlined"
+                width="50%"
+                placeholder="Type a number…"
+                value={itemQuant}
+                onChange={(e) => setItemQuant(e.target.value)}
+              />
+            </Box>
+
             <Button
               variant="outlined"
               onClick={() => {
-                addItem(itemName);
+                addItem(itemName, itemQuant);
                 setItemName("");
+                setItemQuant(1);
                 handleClose();
               }}
             >
@@ -144,7 +164,12 @@ export default function Home() {
         Add Item
       </Button>
 
-      <Box border={"1px solid #333"} borderRadius={2} bgcolor={"#c0d6df"}>
+      <Box
+        border={"1px solid #333"}
+        borderRadius={2}
+        bgcolor={"#c0d6df"}
+        minWidth={"1000px"}
+      >
         <Box
           width="100%"
           height="100px"
